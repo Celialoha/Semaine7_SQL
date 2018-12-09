@@ -1,0 +1,84 @@
+drop database AMARCHCANIGOU;
+create database if not exists AMARCHCANIGOU;
+
+use AMARCHCANIGOU ;
+
+create table ADHERENT
+(CodeAdh int primary key auto_increment,
+NomAdh varchar(50),
+PrenomAdh varchar(20),
+DateNaiss date);
+
+create table LIEU
+(CodeLieu int primary key auto_increment,
+NomLieu varchar(50));
+
+create table MARCHE
+(CodeMarche int primary key auto_increment,
+DateMarche date,
+CodeLieu int,
+index indCodeLieu (CodeLieu),
+constraint FK_Lieu foreign key (CodeLieu) references LIEU (CodeLieu));
+
+create table REALISATION
+(CodeAdh int,
+CodeMarche int,
+index indCodeAdh (CodeAdh),
+index indCodeMarche (CodeMarche),
+constraint FK_RealAdh foreign key (CodeAdh) references ADHERENT (CodeAdh)
+on delete cascade,
+constraint FK_RealMarche foreign key (CodeMarche) references MARCHE (CodeMarche)
+on delete cascade);
+
+create table ANNEE
+(Annee date primary key,
+prixMajeur int,
+prixMineur int);
+
+create table COTISATION
+(CodeAdh int,
+Annee date,
+primary key (CodeAdh, Annee),
+index indCotCodeAdh (CodeAdh),
+index indAnnee (Annee),
+constraint FK_CotAdh foreign key (CodeAdh) references ADHERENT (CodeAdh)
+on delete cascade,
+constraint FK_CotAn foreign key (Annee) references ANNEE (Annee)
+on delete cascade);
+
+-- 2 --
+alter table MARCHE
+add Difficulte varchar(50);
+
+-- 3 --
+alter table MARCHE
+modify Difficulte set ('Faible','Moyen', 'Difficile', 'Compétition' );
+
+-- 4 --
+ALTER TABLE ANNEE
+ADD constraint CheckAnnee CHECK (Annee>2000 and Annee<2020);
+
+-- 5 --
+insert into ADHERENT (NomAdh, PrenomAdh)
+values ('Dali', 'Salvador'),
+('Picasso', 'Pablo');
+
+insert into ANNEE (Annee,prixMajeur)
+values (2018,52),
+(2014, 52);
+
+insert into COTISATION (CodeAdh, Annee)
+values (1, 2018),
+(2, 2014);
+
+insert into LIEU (NomLieu)
+values ('Pic Saint-Loup'),
+('Saint-Martin-de-Londres');
+
+insert into MARCHE (DateMarche)
+values (2018-12-01),
+(2018-12-02);
+
+insert into REALISATION (codeAdh, CodeMarche)
+values (1, 1),
+(2,2);
